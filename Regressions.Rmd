@@ -1,0 +1,92 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+```{r}
+setwd('/Users/katefong/Documents/Eco 590 /Weekly Tasks/final-project-kate-fong')
+
+rt = read.csv('/Users/katefong/Documents/Eco 590 /Weekly Tasks/assignment-2-get-data-kate-fong/finalrottentomato.csv')
+```
+
+```{r}
+unique(rt$Rating)
+rt_edited <- replace(rt$Rating, rt$Rating == "", NA) #if the column is empty replace with NA https://www.geeksforgeeks.org/how-to-replace-specific-values-in-column-in-r-dataframe/
+
+rt$Rating <- rt_edited
+rt2 <- rt[complete.cases(rt),] #telling r to only keep the rows with no missing values; nothing after the comma bc telling r to select all columns
+```
+
+```{r}
+library(dplyr)
+library(tidyverse)
+library(stargazer)
+```
+
+Basic Regression 
+```{r}
+rt1 <- lm(BoxOffice.GrossUSA. ~ streamingornot, data= rt)
+print(rt1)
+```
+Regression adding Release Type 
+```{r}
+rt2 <- lm(BoxOffice.GrossUSA. ~ streamingornot + releasetype , data=rt)
+print(rt2)
+```
+
+Regression including more variables + Genre
+```{r}
+rt3 <- lm(BoxOffice.GrossUSA. ~ factor(streamingornot) + factor(releasetype) + factor(Rating) + factor(Genre) + numofreviews + MovieRuntime  + factor(Genre)  + factor(year), data= rt)
+summary(rt3)
+```
+
+Regression with Rating
+```{r}
+rt4 <- lm(BoxOffice.GrossUSA. ~ streamingornot + releasetype + factor(Rating) + numofreviews + MovieRuntime + factor(year) , data= rt2)
+summary(rt4)
+```
+
+Regression w/o rating and genre
+```{r}
+rt5 <- lm(BoxOffice.GrossUSA. ~ streamingornot + releasetype + numofreviews + MovieRuntime + factor(year) , data= rt)
+print(rt5)
+```
+
+Reg1 with log Boxoffice
+```{r}
+rt6 <- lm(log(BoxOffice.GrossUSA.) ~ streamingornot, data= rt)
+#print(rt6)
+```
+
+Reg2 with log BoxOffice
+```{r}
+rt7 <- lm(log(BoxOffice.GrossUSA.) ~ streamingornot + releasetype , data=rt)
+#print(rt7)
+```
+
+Reg5 with log BoxOffice
+```{r}
+rt8 <- lm(log(BoxOffice.GrossUSA.) ~ streamingornot + releasetype + numofreviews + MovieRuntime + factor(year) , data= rt)
+#print(rt8)
+```
+
+```{r}
+reg9 <- lm_robust(BoxOffice.GrossUSA. ~ MovieRuntime + factor(Rating) + factor(Genre) + factor(year) +numofreviews + factor(streamingornot), data= rt)
+#print(reg9)
+```
+
+
+
+```{r}
+stargazer(rt1, rt2, rt5, type='html', title = 'My Models', align = TRUE, out = "regression.html")
+```
+The FINAL Regressions:
+```{r}
+stargazer(rt6, rt7, rt8, type='html', title = 'Data Results', 
+          column.labels = c("", "", ""),
+           dep.var.caption = "",
+           covariate.labels = c("StreamingOrNot", "ReleaseType", "NumofReviews",               "MovieRuntime", "2020" , "2021"),
+           dep.var.labels   = "lnGrossBoxOffice",
+          out = "logBOregression.html")
+```
+
+

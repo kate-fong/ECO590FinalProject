@@ -1,0 +1,48 @@
+---
+title: "Final Project - R Notebook"
+output: html_notebook
+---
+```{r}
+library(dplyr)
+library(tidyverse)
+library(WDI)
+library(estimatr)
+library(stargazer)
+library(vtable)
+
+setwd('/Users/katefong/Documents/Eco 590 /Weekly Tasks/final-project-kate-fong')
+
+rt = read.csv('/Users/katefong/Documents/Eco 590 /Weekly Tasks/assignment-2-get-data-kate-fong/finalrottentomato.csv') #importing the data
+```
+
+
+Regression #1
+```{r}
+rt1 <- lm(log(BoxOffice.GrossUSA.) ~ streamingornot, data= rt)
+#print(rt6)
+```
+
+Regression #2
+```{r}
+rt2 <- lm(log(BoxOffice.GrossUSA.) ~ streamingornot + releasetype , data=rt)
+#print(rt7)
+```
+
+Regression #3
+```{r}
+rt3 <- lm(log(BoxOffice.GrossUSA.) ~ streamingornot + releasetype + numofreviews + MovieRuntime + factor(year) , data= rt)
+#print(rt8)
+``` 
+
+
+Exporting the regressions into a nice table
+```{r}
+stargazer(rt1, rt2, rt3, type='html', title = 'Final Data Results', 
+          column.labels = c("", "", ""),
+           dep.var.caption = "",
+           covariate.labels = c("StreamingOrNot", "ReleaseType", "NumofReviews",               "MovieRuntime", "2020" , "2021"),
+           dep.var.labels   = "lnGrossBoxOffice",
+          out = "FinalProjectRegressions.html")
+```
+
+
